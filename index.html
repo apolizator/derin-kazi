@@ -1,0 +1,143 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Derin Kazı</title>
+<meta name="theme-color" content="#14100d">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Derin Kazı">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Bungee&display=swap">
+<link rel="stylesheet" href="styles.css">
+
+<div id="app">
+  <header class="hud">
+    <div class="wallet">
+      <div class="purse" id="purse">
+        <span class="coin-dot" aria-hidden="true"></span>
+        <span class="purse-v num" id="coins" aria-label="Altın">0</span>
+      </div>
+      <div class="hud-sub" id="hudSub"><span class="num" id="hudSubV">Usta 1</span></div>
+    </div>
+    <div class="depth">
+      <span class="depth-v num" id="depthM">Yüzey</span>
+      <span class="depth-b" id="biome">Yüzey</span>
+    </div>
+  </header>
+
+  <main class="stage" id="stage" tabindex="0" aria-label="Maden. Dokun ya da boşluk: vur, merdivendeyken bırak, maden girişinde aşağı atla. Sağ-sol ok: yürü. Yukarı ok: tırman.">
+    <canvas id="game" aria-hidden="true"></canvas>
+    <div class="stage-top" id="stageTop" hidden>
+      <div class="hp-label"><span id="layerLbl">Toprak 1/10</span><span id="reward"></span></div>
+      <div class="hp-track"><div class="hp-fill" id="hpFill"></div><span class="hp-num num" id="hpNum"></span></div>
+    </div>
+    <div class="gate" id="gate" hidden>
+      <div class="gate-title" id="gateTitle"></div>
+      <div class="gate-sub" id="gateSub"></div>
+      <button class="gate-btn" id="gateBtn" type="button">Aşağı atla</button>
+    </div>
+    <p class="hint" id="hint">Evindesin: yeteneklerini dağıt, sonra Madenler'e git</p>
+    <div class="house-ui" id="houseUi"><button class="big-btn" id="goMines" type="button">Madenler ▸</button></div>
+    <div class="mine-sel" id="mineSel" hidden>
+      <div class="ms-head"><h2>Madenler</h2><button class="ms-back" id="mineSelBack" type="button">Eve dön</button></div>
+      <div class="ms-list" id="mineCards"></div>
+    </div>
+    <div class="stage-bottom">
+      <button class="ctl" id="climbBtn" type="button" aria-label="Merdivenden tırman (basılı tut)" hidden><svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg><span>Tırman</span></button>
+      <button class="ctl" id="homeBtn" type="button" aria-label="Eve dön" hidden><svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-5h4v5"/></svg><span>Ev</span></button>
+      <button class="ctl" id="walkL" type="button" aria-label="Sola yürü (basılı tut)"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg><span>Sol</span></button>
+      <div class="chips">
+        <span class="chip bag" id="bagChip"><span class="bag-fill" id="bagFill"></span><span class="bag-t num" id="bagText">Çanta 0 kg / 40 kg</span></span>
+        <span class="chip pile" id="pileChip" hidden></span>
+        <span class="chip" id="elevChip" hidden></span>
+      </div>
+      <button class="chip chip-btn" id="autoBtn" type="button" aria-pressed="false" hidden>Oto: Kapalı</button>
+      <button class="ctl" id="walkR" type="button" aria-label="Sağa yürü (basılı tut)"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg><span>Sağ</span></button>
+    </div>
+  </main>
+
+  <section class="rack" aria-label="Gelişim">
+    <div class="tabs" role="tablist" aria-label="Sekmeler" style="padding-top:8px">
+      <button class="tab" role="tab" type="button" id="tab-char" aria-controls="pane-char">Karakter<span class="tab-dot" hidden></span></button>
+      <button class="tab" role="tab" type="button" id="tab-gear" aria-controls="pane-gear">Ekipman<span class="tab-dot" hidden></span></button>
+      <button class="tab" role="tab" type="button" id="tab-haul" aria-controls="pane-haul">Taşıma<span class="tab-dot" hidden></span></button>
+      <button class="tab" role="tab" type="button" id="tab-gem" aria-controls="pane-gem">Elmas<span class="tab-dot" hidden></span></button>
+      <button class="tab" role="tab" type="button" id="tab-hero" aria-controls="pane-hero">Kahraman<span class="tab-dot" hidden></span></button>
+      <button class="tab" role="tab" type="button" id="tab-skill" aria-controls="pane-skill">Yetenek<span class="tab-dot" hidden></span></button>
+      <button class="tab" role="tab" type="button" id="tab-ach" aria-controls="pane-ach">Başarı<span class="tab-dot" hidden></span></button>
+    </div>
+
+    <div class="pane" id="pane-char" role="tabpanel" aria-labelledby="tab-char"><div class="list" id="charList"></div></div>
+    <div class="pane" id="pane-gear" role="tabpanel" aria-labelledby="tab-gear" hidden></div>
+    <div class="pane" id="pane-haul" role="tabpanel" aria-labelledby="tab-haul" hidden></div>
+    <div class="pane" id="pane-gem" role="tabpanel" aria-labelledby="tab-gem" hidden>
+      <div class="prest">
+        <div class="prest-head">
+          <span class="gem-big"><span class="gem-dot lg" aria-hidden="true"></span><span class="num" id="gemCount">0</span></span>
+          <span class="prest-sub">elmas</span>
+        </div>
+        <p class="prest-text">Her patlayan katmandan payın kadar elmas düşer. Bu seferin güçlü yükseltmelerine harca.</p>
+        <p class="efs-note" id="runNote"></p>
+      </div>
+      <div class="list" id="gemList"></div>
+    </div>
+    <div class="pane" id="pane-hero" role="tabpanel" aria-labelledby="tab-hero" hidden>
+      <div class="lvl-card">
+        <div class="lvl-head"><span class="lvl-badge">Usta <b class="num" id="lvlNum">1</b></span><span class="lvl-xp num" id="lvlXp"></span></div>
+        <div class="lvl-track"><div class="lvl-fill" id="lvlFill"></div></div>
+        <p class="lvl-stats">Seviye, yetenek puanı ve başarılar hiç sıfırlanmaz. Aşağıdakiler kalıcı güçlerin toplamı.</p>
+        <dl class="sum hero-stats" id="heroStats"></dl>
+      </div>
+      <h3 class="pane-label">Madenler</h3>
+      <ul class="mine-list" id="mineList"></ul>
+    </div>
+    <div class="pane" id="pane-skill" role="tabpanel" aria-labelledby="tab-skill" hidden>
+      <div class="sk-top">
+        <span class="sp-free"><b class="num" id="spFree">0 puan</b> dağıtılabilir</span>
+        <button class="link-btn" id="respecBtn" type="button">Puanları sıfırla</button>
+      </div>
+      <p class="efs-note" id="skillNote"></p>
+      <div class="skill-tree" id="skillTree"></div>
+    </div>
+    <div class="pane" id="pane-ach" role="tabpanel" aria-labelledby="tab-ach" hidden>
+      <p class="efs-note">Zor barajlar, küçük ama birikerek büyüyen kalıcı bonuslar: %1, %2, %4, %8…</p>
+      <ul class="ach-list" id="achList"></ul>
+    </div>
+
+    <footer class="rack-foot">
+      <button class="link-btn who" id="who" type="button">Çevrimdışı</button>
+      <span class="foot-actions">
+        <button class="link-btn" id="soundBtn" type="button" aria-pressed="true">Ses: Açık</button>
+        <button class="link-btn" id="resetBtn" type="button">Sıfırla</button>
+      </span>
+    </footer>
+  </section>
+</div>
+
+<div class="modal" id="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h2 class="sheet-title" id="modalTitle"></h2>
+    <div class="sheet-body" id="modalBody"></div>
+    <div class="sheet-actions">
+      <button class="btn-ghost" id="modalCancel" type="button">Vazgeç</button>
+      <button class="btn-main" id="modalOk" type="button">Tamam</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="login" hidden>
+  <form class="sheet" id="loginForm" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <h2 class="sheet-title" id="loginTitle">Madenci adın</h2>
+    <p class="sheet-note" id="loginNote" hidden>Madenler herkes için ortak. Aynı adla başka cihazdan girince aynı karakter açılır.</p>
+    <label class="field-label" for="loginName">Kullanıcı adı</label>
+    <input class="field" id="loginName" name="name" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="16" required>
+    <p class="field-error" id="loginErr" hidden></p>
+    <div class="sheet-actions"><button class="btn-main" type="submit">Madene gir</button></div>
+  </form>
+</div>
+<script src="game.js"></script>

@@ -1,0 +1,26 @@
+#!/bin/bash
+# Derin Kazı: oyun sunucusunu (kapalıysa) arka planda açar, oyunu uygulama penceresinde başlatır.
+# Sunucu açık kalır; telefon da http://<mac-adı>.local:8765 adresinden bağlanır.
+# Uygulama oyun klasörünün içindeyse orayı kullan (başka Mac'e taşınınca da çalışır)
+APPDIR="$(cd "$(dirname "$0")/../../.." && pwd)"
+if [ -f "$APPDIR/server.py" ]; then DIR="$APPDIR"; else DIR="/Users/apolizator/gamedeneme"; fi
+if [ ! -f "$DIR/server.py" ]; then
+  /usr/bin/osascript -e 'display alert "Derin Kazı" message "Oyun klasörü bulunamadı. Uygulamayı gamedeneme klasörünün içinden aç."'
+  exit 1
+fi
+PORT=8765
+URL="http://localhost:$PORT"
+if ! /usr/sbin/lsof -nP -iTCP:$PORT -sTCP:LISTEN >/dev/null 2>&1; then
+  mkdir -p "$DIR/data"
+  cd "$DIR" && nohup /usr/bin/python3 server.py >> "$DIR/data/sunucu.log" 2>&1 &
+  for _ in $(seq 1 40); do
+    /usr/bin/curl -s -o /dev/null "$URL/api/hello" && break
+    sleep 0.25
+  done
+fi
+if [ -d "/Applications/Google Chrome.app" ]; then
+  # Sekmesiz, adres çubuksuz uygulama penceresi (kendi profiliyle)
+  open -na "Google Chrome" --args --app="$URL" --user-data-dir="$HOME/Library/Application Support/DerinKazi" --window-size=460,900
+else
+  open "$URL"
+fi

@@ -1,0 +1,60 @@
+{
+  "version": 2,
+  "layerM": 4,
+  "mines": [
+    {
+      "name": "Çayır Ocağı",
+      "layers": 10,
+      "hp0": 1500,
+      "grow": 1.4,
+      "gpd": 0.15,
+      "xp": 10,
+      "gems": 1
+    },
+    {
+      "name": "Kömür Ocağı",
+      "layers": 12,
+      "hp0": 30000,
+      "grow": 1.39,
+      "gpd": 0.3,
+      "xp": 16,
+      "gems": 2
+    },
+    {
+      "name": "Altın Madeni",
+      "layers": 14,
+      "hp0": 600000,
+      "grow": 1.38,
+      "gpd": 0.6,
+      "xp": 26,
+      "gems": 3
+    },
+    {
+      "name": "Safir Mağarası",
+      "layers": 16,
+      "hp0": 12000000,
+      "grow": 1.37,
+      "gpd": 1.2,
+      "xp": 42,
+      "gems": 4
+    },
+    {
+      "name": "Çekirdek Kuyusu",
+      "layers": 18,
+      "hp0": 240000000,
+      "grow": 1.36,
+      "gpd": 2.4,
+      "xp": 68,
+      "gems": 5
+    },
+    {
+      "name": "Derinlik Kapısı",
+      "layers": 20,
+      "hp0": 4800000000,
+      "grow": 1.35,
+      "gpd": 4.8,
+      "xp": 110,
+      "gems": 6
+    }
+  ]
+}
